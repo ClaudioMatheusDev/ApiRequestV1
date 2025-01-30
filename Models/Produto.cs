@@ -10,4 +10,7 @@ public class Produto
     public float Estoque { get; set; }
     public DateTime DataCadastro { get; set; }
 
+    public int CategoriaID { get; set; }
+    public Categoria? Categoria { get; set; }
+
 }
