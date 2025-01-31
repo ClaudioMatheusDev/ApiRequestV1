@@ -16,6 +16,7 @@ namespace APIRequest.Controllers
         {
             _context = context;
         }
+
         [HttpGet]
         public ActionResult<IEnumerable<Produto>> Get()
         {
@@ -26,6 +27,7 @@ namespace APIRequest.Controllers
             }
             return produtos;
         }
+
         [HttpGet("{id:int}", Name = "ObterProduto")]
         public ActionResult<Produto> Get(int id)
         {
