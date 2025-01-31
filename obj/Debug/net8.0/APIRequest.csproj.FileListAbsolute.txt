@@ -136,3 +136,4 @@ C:\Users\claud\OneDrive\Desktop\PROJETOS\PROJETOS\APIRequest\APIRequest\APIReque
 C:\Users\claud\OneDrive\Desktop\PROJETOS\PROJETOS\APIRequest\APIRequest\APIRequest\obj\Debug\net8.0\APIRequest.pdb
 C:\Users\claud\OneDrive\Desktop\PROJETOS\PROJETOS\APIRequest\APIRequest\APIRequest\obj\Debug\net8.0\APIRequest.genruntimeconfig.cache
 C:\Users\claud\OneDrive\Desktop\PROJETOS\PROJETOS\APIRequest\APIRequest\APIRequest\obj\Debug\net8.0\ref\APIRequest.dll
+C:\Users\claud\OneDrive\Desktop\PROJETOS\PROJETOS\APIRequest\APIRequest\APIRequest\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
