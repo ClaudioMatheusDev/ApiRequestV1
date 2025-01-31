@@ -20,16 +20,16 @@ namespace APIRequest.Controllers
         public ActionResult<IEnumerable<Produto>> Get()
         {
             var produtos = _context.Produtos.ToList();
-            if(produtos is null)
+            if (produtos is null)
             {
                 return NotFound("Produtos não encontrado!");
             }
             return produtos;
         }
-        [HttpGet("{id:int}", Name="ObterProduto")]
+        [HttpGet("{id:int}", Name = "ObterProduto")]
         public ActionResult<Produto> Get(int id)
         {
-            var produto = _context.Produtos.FirstOrDefault(p=>  p.ProdutoID == id);
+            var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoID == id);
             if (produto is null)
             {
                 return NotFound("Produto não encontrado!");
@@ -40,14 +40,14 @@ namespace APIRequest.Controllers
         [HttpPost]
         public ActionResult Post(Produto produto)
         {
-            if(produto is null)
+            if (produto is null)
                 return BadRequest("Produto não inserido!");
 
             _context.Produtos.Add(produto);
             _context.SaveChanges();
 
             return new CreatedAtRouteResult("ObterProduto",
-                new { id = produto.ProdutoID }, produto);
+                  new { id = produto.ProdutoID }, produto);
         }
 
         [HttpPut("{id:int}")]
@@ -60,10 +60,25 @@ namespace APIRequest.Controllers
 
             _context.Entry(produto).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             _context.SaveChanges();
-            
+
             return Ok("Produto atualizado com sucesso!");
         }
 
+        [HttpDelete("{id:int}")]
+        public ActionResult Delete(int id)
+        {
+            var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoID == id);
 
+            if (produto is null)
+            {
+                return NotFound("Produto não encontrado!");
+            }
+            else
+            {
+                _context.Produtos.Remove(produto);
+                _context.SaveChanges();
+                return Ok(produto);
+            }
+        }
     }
 }
