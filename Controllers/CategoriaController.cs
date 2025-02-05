@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace APIRequest.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class CategoriaController : ControllerBase
     {
@@ -21,50 +21,69 @@ namespace APIRequest.Controllers
         }
 
         /// <summary>
-        /// Obtém todas as categorias com seus produtos.
+        /// Obtém todas as categorias com seus respectivos produtos.
         /// </summary>
-        /// <returns>Uma lista de categorias com seus produtos.</returns>
+        /// <returns>Lista de categorias com seus produtos associados.</returns>
         [HttpGet("produtos")]
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutos()
         {
-            return await _context.Categorias.Include(p => p.Produtos).ToListAsync();
+            var categorias = await _context.Categorias
+                                           .Include(c => c.Produtos)
+                                           .ToListAsync();
+
+            if (!categorias.Any())
+            {
+                return NotFound("Nenhuma categoria encontrada.");
+            }
+
+            return Ok(categorias);
         }
 
         /// <summary>
         /// Obtém todas as categorias.
         /// </summary>
-        /// <returns>Uma lista de categorias.</returns>
+        /// <returns>Lista de categorias.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Categoria>>> Get()
         {
-            return await _context.Categorias.ToListAsync();
+            var categorias = await _context.Categorias.ToListAsync();
+
+            if (!categorias.Any())
+            {
+                return NotFound("Nenhuma categoria encontrada.");
+            }
+
+            return Ok(categorias);
         }
 
         /// <summary>
         /// Obtém uma categoria pelo ID.
         /// </summary>
-        /// <param name="id">O ID da categoria.</param>
-        /// <returns>A categoria correspondente ao ID fornecido.</returns>
+        /// <param name="id">ID da categoria.</param>
+        /// <returns>Detalhes da categoria com o ID especificado.</returns>
         [HttpGet("{id:int}", Name = "ObterCategoria")]
         public async Task<ActionResult<Categoria>> Get(int id)
         {
-            var categoria = await _context.Categorias.FirstOrDefaultAsync(p => p.CategoriaID == id);
-            if (categoria is null)
+            var categoria = await _context.Categorias
+                                          .FirstOrDefaultAsync(c => c.CategoriaID == id);
+
+            if (categoria == null)
             {
                 return NotFound($"Categoria com ID {id} não encontrada.");
             }
+
             return Ok(categoria);
         }
 
         /// <summary>
         /// Cria uma nova categoria.
         /// </summary>
-        /// <param name="categoria">A categoria a ser criada.</param>
-        /// <returns>Retorna a categoria criada.</returns>
+        /// <param name="categoria">Dados da categoria a ser criada.</param>
+        /// <returns>Categoria criada.</returns>
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Categoria categoria)
         {
-            if (categoria is null)
+            if (categoria == null)
             {
                 return BadRequest("Dados da categoria não fornecidos.");
             }
@@ -77,21 +96,21 @@ namespace APIRequest.Controllers
             _context.Categorias.Add(categoria);
             await _context.SaveChangesAsync();
 
-            return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaID }, categoria);
+            return CreatedAtRoute("ObterCategoria", new { id = categoria.CategoriaID }, categoria);
         }
 
         /// <summary>
-        /// Atualiza uma categoria existente.
+        /// Atualiza os dados de uma categoria existente.
         /// </summary>
-        /// <param name="id">O ID da categoria a ser atualizada.</param>
-        /// <param name="categoria">Os novos dados da categoria.</param>
-        /// <returns>Retorna a categoria atualizada.</returns>
+        /// <param name="id">ID da categoria a ser atualizada.</param>
+        /// <param name="categoria">Dados atualizados da categoria.</param>
+        /// <returns>Categoria atualizada.</returns>
         [HttpPut("{id:int}")]
         public async Task<ActionResult> Put(int id, [FromBody] Categoria categoria)
         {
             if (id != categoria.CategoriaID)
             {
-                return BadRequest("ID da categoria não corresponde ao ID fornecido.");
+                return BadRequest("O ID da categoria não corresponde ao ID fornecido.");
             }
 
             if (!ModelState.IsValid)
@@ -99,22 +118,32 @@ namespace APIRequest.Controllers
                 return BadRequest(ModelState);
             }
 
-            _context.Entry(categoria).State = EntityState.Modified;
+            var categoriaExistente = await _context.Categorias.FindAsync(id);
+            if (categoriaExistente == null)
+            {
+                return NotFound($"Categoria com ID {id} não encontrada.");
+            }
+
+            // Atualiza os dados da categoria
+            categoriaExistente.Nome = categoria.Nome; // Supondo que o nome seja a única propriedade editável
+            _context.Entry(categoriaExistente).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return Ok(categoria);
+            return Ok(categoriaExistente);
         }
 
         /// <summary>
         /// Remove uma categoria pelo ID.
         /// </summary>
-        /// <param name="id">O ID da categoria a ser removida.</param>
-        /// <returns>Retorna a categoria removida.</returns>
+        /// <param name="id">ID da categoria a ser removida.</param>
+        /// <returns>Categoria removida.</returns>
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var categoria = await _context.Categorias.FirstOrDefaultAsync(p => p.CategoriaID == id);
-            if (categoria is null)
+            var categoria = await _context.Categorias
+                                          .FirstOrDefaultAsync(c => c.CategoriaID == id);
+
+            if (categoria == null)
             {
                 return NotFound($"Categoria com ID {id} não encontrada.");
             }
