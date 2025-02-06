@@ -5,7 +5,7 @@
     "version": "1.0"
   },
   "paths": {
-    "/Categoria/produtos": {
+    "/api/Categoria/produtos": {
       "get": {
         "tags": [
           "Categoria"
@@ -43,7 +43,7 @@
         }
       }
     },
-    "/Categoria": {
+    "/api/Categoria": {
       "get": {
         "tags": [
           "Categoria"
@@ -110,7 +110,7 @@
         }
       }
     },
-    "/Categoria/{id}": {
+    "/api/Categoria/{id}": {
       "get": {
         "tags": [
           "Categoria"
@@ -458,9 +458,6 @@
           "categoriaID": {
             "type": "integer",
             "format": "int32"
-          },
-          "categoria": {
-            "$ref": "#/components/schemas/Categoria"
           }
         },
         "additionalProperties": false

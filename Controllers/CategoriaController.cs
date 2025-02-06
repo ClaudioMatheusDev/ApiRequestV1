@@ -27,16 +27,23 @@ namespace APIRequest.Controllers
         [HttpGet("produtos")]
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutos()
         {
-            var categorias = await _context.Categorias
-                                           .Include(c => c.Produtos)
-                                           .ToListAsync();
-
-            if (!categorias.Any())
+            try
             {
-                return NotFound("Nenhuma categoria encontrada.");
-            }
+                var categorias = await _context.Categorias
+                                               .Include(c => c.Produtos)
+                                               .ToListAsync();
 
-            return Ok(categorias);
+                if (!categorias.Any())
+                {
+                    return NotFound("Nenhuma categoria encontrada.");
+                }
+
+                return Ok(categorias);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao obter categorias: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -46,14 +53,21 @@ namespace APIRequest.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Categoria>>> Get()
         {
-            var categorias = await _context.Categorias.ToListAsync();
-
-            if (!categorias.Any())
+            try
             {
-                return NotFound("Nenhuma categoria encontrada.");
-            }
+                var categorias = await _context.Categorias.ToListAsync();
 
-            return Ok(categorias);
+                if (!categorias.Any())
+                {
+                    return NotFound("Nenhuma categoria encontrada.");
+                }
+
+                return Ok(categorias);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao obter categorias: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -64,15 +78,22 @@ namespace APIRequest.Controllers
         [HttpGet("{id:int}", Name = "ObterCategoria")]
         public async Task<ActionResult<Categoria>> Get(int id)
         {
-            var categoria = await _context.Categorias
-                                          .FirstOrDefaultAsync(c => c.CategoriaID == id);
-
-            if (categoria == null)
+            try
             {
-                return NotFound($"Categoria com ID {id} não encontrada.");
-            }
+                var categoria = await _context.Categorias
+                                              .FirstOrDefaultAsync(c => c.CategoriaID == id);
 
-            return Ok(categoria);
+                if (categoria == null)
+                {
+                    return NotFound($"Categoria com ID {id} não encontrada.");
+                }
+
+                return Ok(categoria);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao obter categoria: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -83,20 +104,27 @@ namespace APIRequest.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Categoria categoria)
         {
-            if (categoria == null)
+            try
             {
-                return BadRequest("Dados da categoria não fornecidos.");
-            }
+                if (categoria == null)
+                {
+                    return BadRequest("Dados da categoria não fornecidos.");
+                }
 
-            if (!ModelState.IsValid)
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                _context.Categorias.Add(categoria);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtRoute("ObterCategoria", new { id = categoria.CategoriaID }, categoria);
+            }
+            catch (Exception ex)
             {
-                return BadRequest(ModelState);
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao criar categoria: {ex.Message}");
             }
-
-            _context.Categorias.Add(categoria);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtRoute("ObterCategoria", new { id = categoria.CategoriaID }, categoria);
         }
 
         /// <summary>
@@ -108,28 +136,35 @@ namespace APIRequest.Controllers
         [HttpPut("{id:int}")]
         public async Task<ActionResult> Put(int id, [FromBody] Categoria categoria)
         {
-            if (id != categoria.CategoriaID)
+            try
             {
-                return BadRequest("O ID da categoria não corresponde ao ID fornecido.");
-            }
+                if (id != categoria.CategoriaID)
+                {
+                    return BadRequest("O ID da categoria não corresponde ao ID fornecido.");
+                }
 
-            if (!ModelState.IsValid)
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var categoriaExistente = await _context.Categorias.FindAsync(id);
+                if (categoriaExistente == null)
+                {
+                    return NotFound($"Categoria com ID {id} não encontrada.");
+                }
+
+                // Atualiza os dados da categoria
+                categoriaExistente.Nome = categoria.Nome; // Supondo que o nome seja a única propriedade editável
+                _context.Entry(categoriaExistente).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return Ok(categoriaExistente);
+            }
+            catch (Exception ex)
             {
-                return BadRequest(ModelState);
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao atualizar categoria: {ex.Message}");
             }
-
-            var categoriaExistente = await _context.Categorias.FindAsync(id);
-            if (categoriaExistente == null)
-            {
-                return NotFound($"Categoria com ID {id} não encontrada.");
-            }
-
-            // Atualiza os dados da categoria
-            categoriaExistente.Nome = categoria.Nome; // Supondo que o nome seja a única propriedade editável
-            _context.Entry(categoriaExistente).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
-            return Ok(categoriaExistente);
         }
 
         /// <summary>
@@ -140,18 +175,25 @@ namespace APIRequest.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var categoria = await _context.Categorias
-                                          .FirstOrDefaultAsync(c => c.CategoriaID == id);
-
-            if (categoria == null)
+            try
             {
-                return NotFound($"Categoria com ID {id} não encontrada.");
+                var categoria = await _context.Categorias
+                                              .FirstOrDefaultAsync(c => c.CategoriaID == id);
+
+                if (categoria == null)
+                {
+                    return NotFound($"Categoria com ID {id} não encontrada.");
+                }
+
+                _context.Categorias.Remove(categoria);
+                await _context.SaveChangesAsync();
+
+                return Ok(categoria);
             }
-
-            _context.Categorias.Remove(categoria);
-            await _context.SaveChangesAsync();
-
-            return Ok(categoria);
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao remover categoria: {ex.Message}");
+            }
         }
     }
 }
