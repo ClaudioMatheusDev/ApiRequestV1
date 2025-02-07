@@ -2,6 +2,8 @@
 using APIRequest.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,10 +21,26 @@ namespace APIRequest.Controllers
             _context = context;
         }
 
+
+        [HttpGet]
+
+        public async Task<ActionResult<Produto>> Get(int Id, [BindRequired] string nome)
+        {
+            var produto = await _context.Produtos.AsNoTracking()
+                .FirstOrDefaultAsync(p => p.ProdutoID == Id || p.Nome == nome);
+
+            if (produto == null)
+            {
+                return NotFound("Produto não encontrado!");
+            }
+            return produto;
+        }
+
+
         /// <summary>
         /// Obtém todos os produtos.
         /// </summary>
-        [HttpGet]
+        [HttpGet ("{id}", Name = "ObterProduto")]
         public ActionResult<IEnumerable<Produto>> Get()
         {
             try
