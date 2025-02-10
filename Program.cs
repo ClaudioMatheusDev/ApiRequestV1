@@ -1,4 +1,5 @@
 using APIRequest.Context;
+using APIRequest.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.Xml;
 using System.Text.Json.Serialization;
@@ -21,6 +22,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(mySqlConnection, ServerVersion.AutoDetect(mySqlConnection)));
 
 
+builder.Services.AddTransient<IMeuServico, MeuServico>();
 
 var app = builder.Build();
 

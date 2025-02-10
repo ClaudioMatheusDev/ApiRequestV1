@@ -1,5 +1,6 @@
 ﻿using APIRequest.Context;
 using APIRequest.Models;
+using APIRequest.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,19 @@ namespace APIRequest.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao obter categorias: {ex.Message}");
             }
+        }
+
+
+        [HttpGet("UsandoFromServices/{nome}")]
+        public ActionResult<string> GetSaudacaoFromServices([FromServices] IMeuServico meuServico, string nome)
+        {
+            return meuServico.Saudacao(nome);
+        }
+
+        [HttpGet("SemUsarFromServices/{nome}")]
+        public ActionResult<string> GetSaudacaoSemFromServices(IMeuServico meuServico, string nome)
+        {
+            return meuServico.Saudacao(nome);
         }
 
         /// <summary>
