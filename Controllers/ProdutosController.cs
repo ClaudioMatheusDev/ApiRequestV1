@@ -61,7 +61,7 @@ namespace APIRequest.Controllers
         /// <summary>
         /// Obtém um produto pelo ID.
         /// </summary>
-        [HttpGet("{id:int}", Name = "ObterProduto")]
+        [HttpGet("{id:int}", Name = "ObterProdutoId")]
         public ActionResult<Produto> Get(int id)
         {
             try
