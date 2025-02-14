@@ -92,6 +92,15 @@ namespace APIRequest.Controllers
         [HttpGet("{id:int}", Name = "ObterCategoria")]
         public async Task<ActionResult<Categoria>> Get(int id)
         {
+
+
+            // throw new Exception("Erro ao obter categoria pelo id");
+            string[] teste = null;
+            if (teste.Length > 0)
+            {
+                return BadRequest();
+            }
+
             try
             {
                 var categoria = await _context.Categorias
