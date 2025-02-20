@@ -1,5 +1,6 @@
 using APIRequest.Context;
 using APIRequest.Extensions;
+using APIRequest.Filtros;
 using APIRequest.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.Xml;
@@ -22,6 +23,8 @@ string mySqlConnection = builder.Configuration.GetConnectionString("DefaultConne
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(mySqlConnection, ServerVersion.AutoDetect(mySqlConnection)));
 
+
+builder.Services.AddScoped<ApiLoggingFilter>();
 
 builder.Services.AddTransient<IMeuServico, MeuServico>();
 

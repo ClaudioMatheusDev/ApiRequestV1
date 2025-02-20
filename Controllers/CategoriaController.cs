@@ -1,4 +1,5 @@
 ﻿using APIRequest.Context;
+using APIRequest.Filtros;
 using APIRequest.Models;
 using APIRequest.Services;
 using Microsoft.AspNetCore.Http;
@@ -65,6 +66,7 @@ namespace APIRequest.Controllers
         /// </summary>
         /// <returns>Lista de categorias.</returns>
         [HttpGet]
+        [ServiceFilter(typeof(ApiLoggingFilter))]
         public async Task<ActionResult<IEnumerable<Categoria>>> Get()
         {
             try
