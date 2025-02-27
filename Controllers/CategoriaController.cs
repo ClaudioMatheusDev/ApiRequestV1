@@ -16,8 +16,10 @@ namespace APIRequest.Controllers
     public class CategoriaController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly  ILogger _logger;
 
-        public CategoriaController(AppDbContext context)
+        public CategoriaController(AppDbContext context,
+            ILogger<CategoriaController> logger)
         {
             _context = context;
         }
@@ -29,6 +31,8 @@ namespace APIRequest.Controllers
         [HttpGet("produtos")]
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutos()
         {
+            _logger.LogInformation("=================GET api/categorias===============================");
+            _logger.LogInformation("### Executando -> GetCategoriasProdutos");
             try
             {
                 var categorias = await _context.Categorias
