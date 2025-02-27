@@ -1,6 +1,7 @@
 using APIRequest.Context;
 using APIRequest.Extensions;
 using APIRequest.Filtros;
+using APIRequest.Logging;
 using APIRequest.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.Xml;
@@ -27,6 +28,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<ApiLoggingFilter>();
 
 builder.Services.AddTransient<IMeuServico, MeuServico>();
+
+
+builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration
+{
+    LogLevel = LogLevel.Information
+    }));
 
 var app = builder.Build();
 
